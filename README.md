@@ -121,7 +121,7 @@ Use `-p:R2ModManProfile=MyProfile` to point at a mod manager profile other than 
 ## Source Code
 Source code is available on Github.
 
-| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/searica/FortifySkillsReborn"> FortifySkillsReborn</a>|
+| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/dethkube/FortifySkillsReborn"> FortifySkillsReborn</a>|
 |-----------|---------------|
 
 
@@ -132,7 +132,7 @@ If you would like to provide suggestions, make feature requests, or reports bugs
 This mod is based on the original one made by Merlyn42 and the patched version was made by Remeil. This mod is a complete rewrite of the original though as the original stopped working several game updates back and has no license. My thanks to Merlyn42 for the original idea though! Also, many thanks to the developers of Jotunn for all their work making the library. Also many thanks to Searica for all their work, happy I could update this for the 1.0 release!
 
 ## Credits and License
-- Original **FortifySkills** mod: Aedenthorn.
+- Original **FortifySkills** mod: Merlyn42, with a later patched version by Remeil.
 - **FortifySkillsRedux**, which this mod is forked from: [Searica](https://github.com/searica/FortifySkillsRedux).
 - This fork (**FortifySkillsReborn**): dethkube, https://github.com/dethkube/FortifySkillsReborn
 

@@ -118,51 +118,21 @@ Use `-p:R2ModManProfile=MyProfile` to point at a mod manager profile other than 
 - Your Fortify skill level will be set to 95% of your current skill level when you first install it so dying immediately will have the same effect as the base game.
 - If you remove this mod your character will be fine, the fortify skill level will disappear and the current skill level will stay the same (including levels gained due to the faster leveling from this mod).
 
-## Donations/Tips
-My mods will always be free to use but if you feel like saying thanks you can tip/donate.
-
-| My Ko-fi: | [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/searica) |
-|-----------|---------------|
-
 ## Source Code
 Source code is available on Github.
 
-| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/searica/FortifySkillsReborn"> FortifySkillsReborn</a>|
+| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/dethkube/FortifySkillsReborn"> FortifySkillsReborn</a>|
 |-----------|---------------|
 
 
 ### Contributions
-If you would like to provide suggestions, make feature requests, or reports bugs and compatibility issues you can either open an issue on the Github repository or tag me (@searica) with a message on my discord [Searica's Mods](https://discord.gg/sFmGTBYN6n).
-
-I'm a grad student and have a lot of personal responsibilities on top of that so I can't promise I will respond quickly, but I do intend to maintain and improve the mod in my free time.
+If you would like to provide suggestions, make feature requests, or reports bugs and compatibility issues please open an issue on the Github repository.
 
 ### Credits
-This mod is based on the original one made by Merlyn42 and the patched version was made by Remeil. This mod is a complete rewrite of the original though as the original stopped working several game updates back and has no license. My thanks to Merlyn42 for the original idea though! Also, many thanks to the developers of Jotunn for all their work making the library.
-
-### Shameless Self Plug (Other Mods By Me)
-If you like this mod you might like some of my other ones.
-
-#### Building Mods
-- [Extra Snap Points Made Easy](https://thunderstore.io/c/valheim/p/Searica/Extra_Snap_Points_Made_Easy/)
-- [AdvancedTerrainModifiers](https://thunderstore.io/c/valheim/p/Searica/AdvancedTerrainModifiers/)
-- [BuildRestrictionTweaksSync](https://thunderstore.io/c/valheim/p/Searica/BuildRestrictionTweaksSync/)
-- [ToolTweaks](https://thunderstore.io/c/valheim/p/Searica/ToolTweaks/)
-
-#### Gameplay Mods
-- [CameraTweaks](https://thunderstore.io/c/valheim/p/Searica/CameraTweaks/)
-- [DodgeShortcut](https://thunderstore.io/c/valheim/p/Searica/DodgeShortcut/)
-- [DiscoveryPins](https://thunderstore.io/c/valheim/p/Searica/DiscoveryPins/)
-- [ProjectileTweaks](https://thunderstore.io/c/valheim/p/Searica/ProjectileTweaks/)
-- [SkilledCarryWeight](https://thunderstore.io/c/valheim/p/Searica/SkilledCarryWeight/)
-- [SafetyStatus](https://thunderstore.io/c/valheim/p/Searica/SafetyStatus/)
-- [WatchWhereYouStab](https://thunderstore.io/c/valheim/p/Searica/WatchWhereYouStab/)
-
-#### Networking Mods
-- [NetworkTweaks](https://thunderstore.io/c/valheim/p/Searica/NetworkTweaks/)
-- [OpenSesame](https://thunderstore.io/c/valheim/p/Searica/OpenSesame/)
+This mod is based on the original one made by Merlyn42 and the patched version was made by Remeil. This mod is a complete rewrite of the original though as the original stopped working several game updates back and has no license. My thanks to Merlyn42 for the original idea though! Also, many thanks to the developers of Jotunn for all their work making the library. Also many thanks to Searica for all their work, happy I could update this for the 1.0 release!
 
 ## Credits and License
-- Original **FortifySkills** mod: Aedenthorn.
+- Original **FortifySkills** mod: Merlyn42, with a later patched version by Remeil.
 - **FortifySkillsRedux**, which this mod is forked from: [Searica](https://github.com/searica/FortifySkillsRedux).
 - This fork (**FortifySkillsReborn**): dethkube, https://github.com/dethkube/FortifySkillsReborn
 
