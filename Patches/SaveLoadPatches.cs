@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using static Skills;
 using Logging;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 [HarmonyPatch(typeof(Skills))]
 public static class SaveLoadPatches

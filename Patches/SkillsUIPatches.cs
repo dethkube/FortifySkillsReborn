@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Logging;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 [HarmonyPatch(typeof(SkillsDialog))]
 public static class SkillsUIPatches

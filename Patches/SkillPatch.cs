@@ -2,7 +2,7 @@
 using UnityEngine;
 using Logging;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 [HarmonyPatch(typeof(Skills.Skill))]
 public static class SkillPatch
@@ -42,8 +42,8 @@ public static class SkillPatch
         }
 
         // Compute new XP value
-        float fortifyRate = FortifySkillsRedux.Instance.GetFortifyXPPerLevel(__instance);
-        float fortifyMax = FortifySkillsRedux.Instance.GetFortityMaxXPRate(__instance);
+        float fortifyRate = FortifySkillsReborn.Instance.GetFortifyXPPerLevel(__instance);
+        float fortifyMax = FortifySkillsReborn.Instance.GetFortityMaxXPRate(__instance);
         fortSkill.FortifyAccumulator += baseXP * Mathf.Clamp(
             (__instance.m_level - fortSkill.FortifyLevel) * fortifyRate, 0.0f, fortifyMax
         );
@@ -111,6 +111,6 @@ public static class SkillPatch
         Log.LogInfo("Applying active skill XP multiplier", Log.InfoLevel.Medium);
 
         // modify XP gain rate
-        factor *= FortifySkillsRedux.Instance.GetActiveSkillXPMult(__instance);
+        factor *= FortifySkillsReborn.Instance.GetActiveSkillXPMult(__instance);
     }
 }

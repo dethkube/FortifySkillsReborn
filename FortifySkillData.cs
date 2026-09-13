@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using static Skills;
 
-namespace FortifySkillsRedux;
+namespace FortifySkillsReborn;
 
 internal sealed class FortifySkillData
 {

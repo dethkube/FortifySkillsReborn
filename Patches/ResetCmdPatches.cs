@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using static Skills;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 [HarmonyPatch]
 internal static class ResetCmdPatches

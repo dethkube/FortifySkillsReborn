@@ -15,16 +15,19 @@ using Logging;
 // Aliased rather than switched over so the existing reload behaviour is kept.
 using ConfigFileWatcher = Configs.ConfigFileWatcher;
 
-namespace FortifySkillsRedux;
+// FortifySkillsReborn is a fork of FortifySkillsRedux by Searica, renamed and
+// modified by dethkube in 2026 and updated for Valheim 1.0. Distributed under
+// the GNU General Public License v3.0; see the LICENSE file.
+namespace FortifySkillsReborn;
 
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
 [BepInDependency(Jotunn.Main.ModGuid, Jotunn.Main.Version)]
 [NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Patch)]
 [SynchronizationMode(AdminOnlyStrictness.IfOnServer)]
-internal sealed class FortifySkillsRedux : BaseUnityPlugin
+internal sealed class FortifySkillsReborn : BaseUnityPlugin
 {
-    public const string PluginName = "FortifySkillsRedux";
-    internal const string Author = "Searica";
+    public const string PluginName = "FortifySkillsReborn";
+    internal const string Author = "dethkube";
     public const string PluginGUID = $"{Author}.Valheim.{PluginName}";
     public const string PluginVersion = "1.6.0";
 
@@ -32,7 +35,7 @@ internal sealed class FortifySkillsRedux : BaseUnityPlugin
     private const string Mechanics = "Mechanics";
     private const string ModdedSkills = "Modded Skill Settings";
 
-    public static FortifySkillsRedux Instance;
+    public static FortifySkillsReborn Instance;
     internal static ConfigFileWatcher ConfigFileWatcher;
     internal class SkillConfig
     {
@@ -144,7 +147,7 @@ internal sealed class FortifySkillsRedux : BaseUnityPlugin
             ActiveSkillXPMult = Config.BindConfigInOrder(
                 section,
                 "Active Skill XP Multiplier",
-                1.5f,
+                1.0f,
                 "Controls XP gained for the active skill level. 1 = base game XP, 1.5 = 50% bonus XP, 0.8 = 20% less XP.",
                 sectionOrder: order,
                 acceptableValues: new AcceptableValueRange<float>(0.0f, 10f)
@@ -152,7 +155,7 @@ internal sealed class FortifySkillsRedux : BaseUnityPlugin
             FortifySkillMaxXPRate = Config.BindConfigInOrder(
                 section,
                 "Max Fortify Skill XP Rate",
-                0.8f,
+                0.5f,
                 "Controls maximum rate of XP earned for the fortified skill as a percentage of vanilla XP rates." +
                 "Values below 1 mean that fortified skills will always increase slower than vanilla skills." +
                 "Values above 1 mean that fortified skills can increase faster than vanilla skills if your active skill level is high enough.",

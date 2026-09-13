@@ -3,7 +3,7 @@ using static Skills;
 using System.Collections.Generic;
 using Logging;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 /// <summary>
 ///     Reset Fortify Skills when resetcharacter console command is used

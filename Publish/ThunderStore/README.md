@@ -1,5 +1,5 @@
-# FortifySkillsRedux
-FortifySkillsRedux is a remake of the FortifySkills mod for Valheim that changes how skills are lost on death. Rather than being punished for dying by losing a flat 5% of every skill, you are instead rewarded for staying alive for longer. This is achieved by adding a new fortified skill level for each skill that is used when you die to reset your skills to their fortified skill level. This means that no matter how many times you die, your skills will never drop below their fortified skill levels.
+# FortifySkillsReborn
+FortifySkillsReborn is a fork of [FortifySkillsRedux](https://github.com/searica/FortifySkillsRedux) by Searica (itself a remake of the original FortifySkills mod), updated for Valheim 1.0 and maintained by dethkube. It changes how skills are lost on death. Rather than being punished for dying by losing a flat 5% of every skill, you are instead rewarded for staying alive for longer. This is achieved by adding a new fortified skill level for each skill that is used when you die to reset your skills to their fortified skill level. This means that no matter how many times you die, your skills will never drop below their fortified skill levels.
 
 **Server-Side Info**: This mod does work as a client-side only mod and only needs to be installed on the server if you wish to enforce configuration settings.
 
@@ -8,8 +8,15 @@ Updated for **Valheim 1.0** (built and verified against 1.0.12, Deep North). Req
 
 Skills added by the game since the previous release (Polearms, Crossbows, Dodge and Ride) get their own configuration sections automatically.
 
-## Version 1.4.0 Notice
-Configuration settings have changed! Please delete your config file and let the mod regenerate if if you're having any issues.
+## Renamed from FortifySkillsRedux
+This mod was renamed from **FortifySkillsRedux** to **FortifySkillsReborn**, which changes the plugin GUID and therefore the config file name:
+
+- Old: `BepInEx/config/Searica.Valheim.FortifySkillsRedux.cfg`
+- New: `BepInEx/config/dethkube.Valheim.FortifySkillsReborn.cfg`
+
+If you are coming from FortifySkillsRedux, **uninstall it first** — running both at once means both will patch the same methods and your XP rates will be applied twice. Your existing settings are not carried over automatically; copy them into the new file if you want to keep them.
+
+Note that the default XP values have changed in this fork (see Configuration below).
 
 ## Installation
 **Via Mod Manager (Recommended)**
@@ -19,10 +26,10 @@ Configuration settings have changed! Please delete your config file and let the 
 **Manual**
 - Download and install [BepInEx Pack](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 - Download and install [Jotunn](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/)
-- Download this mod and move the "FortifySkills.dll" into "<GameLocation>\BepInEx\plugins"
+- Download this mod and move `FortifySkillsReborn.dll` into `<GameLocation>/BepInEx/plugins`
 
 ## Mechanics
-The Fortify skill level increases very slowly at first but if you get your active level significantly higher that your fortified level it will level a little quicker giving you an incentive not to die. Because of this your fortified level may fall a long way behind your active level if you stay alive for a long time and you can lose more than you would with the vanilla 5% penalty. To make up for this your active level increases a little faster than Vanilla as well.
+The Fortify skill level increases very slowly at first but if you get your active level significantly higher that your fortified level it will level a little quicker giving you an incentive not to die. Because of this your fortified level may fall a long way behind your active level if you stay alive for a long time and you can lose more than you would with the vanilla 5% penalty. By default your active skill XP is left at vanilla rates; if you want to offset that risk you can raise **Active Skill XP Multiplier** in the config.
 
 There are two major gameplay advantages to this:
 
@@ -58,11 +65,11 @@ Changes made to the configuration settings will be reflected in-game immediately
 ### Mechanics
 **Active Skill XP Multiplier [Synced with Server]**
 - Controls XP gained for the active skill level. 1 = base game XP, 1.5 = 50% bonus XP, 0.8 = 20% less XP.
-    - Default value: 1.5
+    - Default value: 1.0
 
 **Max Fortify Skill XP Rate [Synced with Server]**
 - Controls maximum rate of XP earned for the fortified skill as a percentage of vanilla XP rates. Values below 1 mean that fortified skills will always increase slower than vanilla skills. Values above 1 mean that fortified skills can increase faster than vanilla skills if your active skill level is high enough.
-    - Default value: 0.8
+    - Default value: 0.5
 
 **Fortify Skill XP Per Level [Synced with Server]**
 - Controls XP gained for the fortified skill. For every level the active skill is above the fortified skill increase the percentage of XP gained for the fortified skill by this amount up to Max Fortify Skill XP Rate.
@@ -120,7 +127,7 @@ My mods will always be free to use but if you feel like saying thanks you can ti
 ## Source Code
 Source code is available on Github.
 
-| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/searica/FortifySkillsRedux"> FortifySkillsRedux</a>|
+| Github Repository: | <img height="18" src="https://github.githubassets.com/favicons/favicon-dark.svg"></img><a href="https://github.com/searica/FortifySkillsReborn"> FortifySkillsReborn</a>|
 |-----------|---------------|
 
 
@@ -153,3 +160,10 @@ If you like this mod you might like some of my other ones.
 #### Networking Mods
 - [NetworkTweaks](https://thunderstore.io/c/valheim/p/Searica/NetworkTweaks/)
 - [OpenSesame](https://thunderstore.io/c/valheim/p/Searica/OpenSesame/)
+
+## Credits and License
+- Original **FortifySkills** mod: Aedenthorn.
+- **FortifySkillsRedux**, which this mod is forked from: [Searica](https://github.com/searica/FortifySkillsRedux).
+- This fork (**FortifySkillsReborn**): dethkube, https://github.com/dethkube/FortifySkillsReborn
+
+Licensed under the **GNU General Public License v3.0** — see [LICENSE](LICENSE). This is a modified version of FortifySkillsRedux; changes made in 2026 include updating the mod for Valheim 1.0, cross-platform build support, and new default XP values.

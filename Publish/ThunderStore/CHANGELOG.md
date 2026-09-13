@@ -12,6 +12,9 @@
 					<li>Updated Jotunn to 2.30.0 and BepInEx to 5.4.2350.</li>
 					<li>Config entries are now generated for the skills added since the last release (Polearms, Crossbows, Dodge, Ride).</li>
 					<li>The project now builds on Linux and macOS as well as Windows.</li>
+					<li>Renamed from FortifySkillsRedux to FortifySkillsReborn. The plugin GUID is now <code>dethkube.Valheim.FortifySkillsReborn</code>, so the config file name has changed and settings are not carried over. Uninstall FortifySkillsRedux before using this mod.</li>
+					<li>Changed the default Active Skill XP Multiplier from 1.5 to 1.0 (vanilla XP rates).</li>
+					<li>Changed the default Max Fortify Skill XP Rate from 0.8 to 0.5.</li>
 				</ul>
 			</td>
 		</tr>
@@ -96,7 +99,7 @@
 			<td align="center">1.0.9</td>
 			<td align="left">
 				<ul>
-					<li>Made FortifySkillsRedux override the forced skill loss in Hardcore mode. Fortified skills will behave as intended regardless of in-game skill loss settings.</li>
+					<li>Made FortifySkillsReborn override the forced skill loss in Hardcore mode. Fortified skills will behave as intended regardless of in-game skill loss settings.</li>
 					<li>Updated Jotunn version.</li>
 				</ul>
 			</td>

@@ -2,7 +2,7 @@
 using HarmonyLib;
 using Logging;
 
-namespace FortifySkillsRedux.Patches;
+namespace FortifySkillsReborn.Patches;
 
 [HarmonyPatch]
 internal static class ItemLossPatches
@@ -19,8 +19,8 @@ internal static class ItemLossPatches
             return;
         }
 
-        bool keepAll = FortifySkillsRedux.Instance.KeepAllItemsOnDeath.Value;
-        bool keepEquipped = FortifySkillsRedux.Instance.KeepEquippedItemsOnDeath.Value;
+        bool keepAll = FortifySkillsReborn.Instance.KeepAllItemsOnDeath.Value;
+        bool keepEquipped = FortifySkillsReborn.Instance.KeepEquippedItemsOnDeath.Value;
         if (!keepAll && !keepEquipped)
         {
             return;

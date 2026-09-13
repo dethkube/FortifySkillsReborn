@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FortifySkillsRedux")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("FortifySkillsReborn")]
+[assembly: AssemblyDescription("Rewards staying alive by giving each skill a fortified level that it resets to on death.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FortifySkillsRedux")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
+[assembly: AssemblyCompany("dethkube")]
+[assembly: AssemblyProduct("FortifySkillsReborn")]
+[assembly: AssemblyCopyright("Copyright © 2023 Searica, © 2026 dethkube. GPL-3.0-or-later.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
