@@ -1,93 +1,149 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<NuGetPackages>$(UserProfile)\.nuget\packages</NuGetPackages>
-		<JotunnProps>$(NuGetPackages)\jotunnlib\2.22.0\build\JotunnLib.props</JotunnProps>
-	</PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
 
+	<!--
+	    Local machine paths (Valheim install, BepInEx location, deploy paths).
+	    Imported first so that everything below can rely on the properties it
+	    sets. See environment.props for how to override any of them.
+	-->
+	<Import Project="environment.props" Condition="Exists('environment.props')" />
 	<Import Project="ModPackageTool.targets" Condition="Exists('ModPackageTool.targets')" />
 
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
 		<OutputType>Library</OutputType>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<!--<LangVersion>latest</LangVersion>-->
-		<!--<LangVersion>preview</LangVersion>-->
 		<LangVersion>12.0</LangVersion>
+		<!-- The game ships a single 64-bit Mono runtime. -->
+		<Platforms>AnyCPU</Platforms>
+		<Prefer32Bit>false</Prefer32Bit>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<!--
+		    Game/BepInEx assemblies are referenced straight out of the install
+		    and must never be copied next to the built plugin.
+		-->
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>full</DebugType>
 		<Optimize>false</Optimize>
-		<OutputPath>bin\Debug\</OutputPath>
-		<DefineConstants>$(DefineConstants);DefineConstants;TRACE;DEBUG</DefineConstants>
+		<OutputPath>bin/Debug/</OutputPath>
+		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
 		<ErrorReport>prompt</ErrorReport>
 		<WarningLevel>4</WarningLevel>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Prefer32Bit>false</Prefer32Bit>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>pdbonly</DebugType>
 		<Optimize>true</Optimize>
-		<OutputPath>bin\Release\</OutputPath>
-		<DefineConstants>
-		</DefineConstants>
+		<OutputPath>bin/Release/</OutputPath>
 		<ErrorReport>prompt</ErrorReport>
 		<WarningLevel>4</WarningLevel>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Prefer32Bit>false</Prefer32Bit>
 	</PropertyGroup>
 
+	<!-- Launching the game from the IDE (Visual Studio / Rider on Windows). -->
 	<PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
 		<StartAction>Program</StartAction>
-		<StartProgram>$(VALHEIM_INSTALL)\valheim.exe</StartProgram>
+		<StartProgram>$(VALHEIM_INSTALL)/valheim.exe</StartProgram>
 		<StartArguments>-console</StartArguments>
 		<StartWorkingDirectory>$(VALHEIM_INSTALL)</StartWorkingDirectory>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-	</PropertyGroup>
+	<!-- ===================== Sanity checks ===================== -->
+	<Target Name="CheckLocalDependencies" BeforeTargets="PrepareForBuild">
+		<Error Condition="!Exists('$(ValheimManagedDir)')"
+		       Text="Could not find the Valheim managed assemblies at '$(ValheimManagedDir)'. Set the Valheim install path explicitly, e.g. dotnet build -p:VALHEIM_INSTALL=/path/to/Valheim (see environment.props)." />
+		<Error Condition="!Exists('$(BEPINEX_PATH)/core/BepInEx.dll')"
+		       Text="Could not find BepInEx at '$(BEPINEX_PATH)'. Install the BepInEx pack for Valheim, or set the path explicitly, e.g. dotnet build -p:BEPINEX_PATH=/path/to/BepInEx (see environment.props)." />
+	</Target>
 
+	<!-- ===================== Package references ===================== -->
 	<ItemGroup>
-	  <Compile Remove="Libraries\**" />
-	  <EmbeddedResource Remove="Libraries\**" />
-	  <None Remove="Libraries\**" />
+		<!--
+		    Lets net48 be targeted on Linux/macOS, where no .NET Framework
+		    targeting pack is installed.
+		-->
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+
+		<!--
+		    Publicizes the game assemblies at build time so the mod can touch
+		    private/protected members (Skills.m_skillData, Player.m_skills, ...).
+
+		    Jotunn ships its own publicizer, but it is a .NET Framework 4.6.2
+		    MSBuild task and cannot be loaded by `dotnet build`, so Jotunn's
+		    build assets are excluded below and this cross-platform publicizer
+		    is used instead.
+		-->
+		<PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all" />
+
+		<PackageReference Include="JotunnLib" Version="2.30.0" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
+	</ItemGroup>
+
+	<!-- ===================== Game + Unity assemblies ===================== -->
+	<!--
+	    Referenced as a set rather than listed one by one, so that a Valheim
+	    update that adds or renames an assembly does not break the build.
+	    The .NET base class libraries shipped alongside them are excluded:
+	    those come from the net48 targeting pack instead.
+	-->
+	<ItemGroup>
+		<_GameAssembly Include="$(ValheimManagedDir)/*.dll"
+		               Exclude="$(ValheimManagedDir)/mscorlib.dll;
+		                        $(ValheimManagedDir)/netstandard.dll;
+		                        $(ValheimManagedDir)/System*.dll;
+		                        $(ValheimManagedDir)/Mono.*.dll;
+		                        $(ValheimManagedDir)/Microsoft.*.dll" />
+
+		<Reference Include="@(_GameAssembly->'%(Filename)')">
+			<HintPath>$(ValheimManagedDir)/%(Identity).dll</HintPath>
+			<Private>false</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+	</ItemGroup>
+
+	<!--
+	    Game assemblies whose internals the mod needs access to, e.g.
+	    Skills.m_skillData, Skills.GetSkill, Player.m_skills,
+	    Humanoid.m_inventory, SkillsDialog.m_elements. Valheim made these
+	    private/protected, so they are publicized at build time.
+
+	    Marked on the Reference items rather than via the publicizer's
+	    "Publicize" item list: that list carries empty default metadata which
+	    BepInEx.AssemblyPublicizer.MSBuild 0.4.3 fails to parse
+	    ("String '' was not recognized as a valid PublicizeTarget").
+	-->
+	<ItemGroup>
+		<Reference Update="assembly_valheim;assembly_utils;assembly_guiutils" Publicize="true" />
+	</ItemGroup>
+
+	<!-- ===================== BepInEx / Harmony ===================== -->
+	<ItemGroup>
+		<Reference Include="BepInEx">
+			<HintPath>$(BEPINEX_PATH)/core/BepInEx.dll</HintPath>
+			<Private>false</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="0Harmony">
+			<HintPath>$(BEPINEX_PATH)/core/0Harmony.dll</HintPath>
+			<Private>false</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+	</ItemGroup>
+
+	<!-- ===================== Project layout ===================== -->
+	<ItemGroup>
+		<Compile Remove="Libraries/**" />
+		<EmbeddedResource Remove="Libraries/**" />
+		<None Remove="Libraries/**" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="LICENSE" />
 		<Content Include="README.md" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Package\" />
-		<Folder Include="Publish\Nexus\" />
-		<Folder Include="Publish\ThunderStore\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Include="App.config" />
-		<None Include="C:\Users\TheUser\Documents\GitHub\FortifySkillsRedux\.editorconfig" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="JotunnLib" Version="2.23.0" />
-	</ItemGroup>
-
-	<Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-		<PropertyGroup>
-			<ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-		</PropertyGroup>
-		<Error Condition="!Exists('$(JotunnProps)')" Text="$([System.String]::Format('$(ErrorText)', '$(JotunnProps)'))" />
-	</Target>
-
-	<ItemGroup>
-	  <EditorConfigFiles Remove="C:\Users\TheUser\Documents\GitHub\FortifySkillsRedux\.editorconfig" />
-	</ItemGroup>
 </Project>

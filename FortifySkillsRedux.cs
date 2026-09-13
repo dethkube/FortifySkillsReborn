@@ -10,6 +10,11 @@ using System.Collections.Generic;
 using Configs;
 using Logging;
 
+// Jotunn 2.30.0 added its own Jotunn.Utils.ConfigFileWatcher, which collides
+// with this mod's Configs.ConfigFileWatcher via the Jotunn.Utils using above.
+// Aliased rather than switched over so the existing reload behaviour is kept.
+using ConfigFileWatcher = Configs.ConfigFileWatcher;
+
 namespace FortifySkillsRedux;
 
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
@@ -21,7 +26,7 @@ internal sealed class FortifySkillsRedux : BaseUnityPlugin
     public const string PluginName = "FortifySkillsRedux";
     internal const string Author = "Searica";
     public const string PluginGUID = $"{Author}.Valheim.{PluginName}";
-    public const string PluginVersion = "1.5.3";
+    public const string PluginVersion = "1.6.0";
 
     private const string MainSection = "Global";
     private const string Mechanics = "Mechanics";

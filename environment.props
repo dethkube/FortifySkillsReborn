@@ -1,19 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<!--
+    Local machine paths (Windows / Linux / macOS).
+
+    Nothing in here normally needs editing. Every property can be overridden
+    without touching this file, either by exporting an environment variable of
+    the same name or by passing it on the command line, e.g.
+
+        dotnet build -c Release -p:VALHEIM_INSTALL=/path/to/Valheim
+
+    Auto-detection only fills a property in when it is empty or points at
+    something that does not actually exist on disk, so an override always wins.
+
+    Forward slashes are used throughout: MSBuild accepts them on every
+    platform, whereas backslashes are not path separators on Linux/macOS.
+-->
+<Project>
+
+	<!-- ========================= Valheim install ========================= -->
+	<!-- Probed by looking for the managed assembly directory underneath. -->
 	<PropertyGroup>
-		<AfterTargets>Build</AfterTargets>
-		<Pdb2MdbPath Condition="!Exists('$(Pdb2MdbPath)')">$(ProjectDir)\libraries\Debug\pdb2mdb.exe</Pdb2MdbPath>
-
-		<!-- Needs to be your path to the base Valheim folder -->
-		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)')">c:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
-		<VALHEIM_SERVER Condition="!Exists('$(VALHEIM_SERVERR)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server</VALHEIM_SERVER>
-
-		<!-- This is the folder where your build gets copied to when using the post-build automations -->
-		<r2ModManPath>$(AppData)\r2modmanPlus-local\Valheim\profiles</r2ModManPath>
-		<BEPINEX_PATH>$(r2ModManPath)\Mod-Debug\BepInEx</BEPINEX_PATH>
-		<MOD_DEPLOYPATH>$(r2ModManPath)\Mod-Debug\BepInEx\plugins</MOD_DEPLOYPATH>
-		<SERVER_DEPLOYPATH>$(VALHEIM_SERVER)\BepInEx\plugins</SERVER_DEPLOYPATH>
-
-		<CopyToServer>false</CopyToServer>
+		<!-- Linux: default Steam location -->
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">$(HOME)/.steam/steam/steamapps/common/Valheim</VALHEIM_INSTALL>
+		<!-- Linux: newer Steam layout -->
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">$(HOME)/.local/share/Steam/steamapps/common/Valheim</VALHEIM_INSTALL>
+		<!-- Linux: Steam installed as a Flatpak -->
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">$(HOME)/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Valheim</VALHEIM_INSTALL>
+		<!-- macOS -->
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">$(HOME)/Library/Application Support/Steam/steamapps/common/Valheim/Contents/MacOS</VALHEIM_INSTALL>
+		<!-- Windows -->
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">C:/Program Files (x86)/Steam/steamapps/common/Valheim</VALHEIM_INSTALL>
+		<VALHEIM_INSTALL Condition="!Exists('$(VALHEIM_INSTALL)/valheim_Data/Managed')">C:/Program Files/Steam/steamapps/common/Valheim</VALHEIM_INSTALL>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<ValheimManagedDir>$(VALHEIM_INSTALL)/valheim_Data/Managed</ValheimManagedDir>
+	</PropertyGroup>
+
+	<!-- ===================== BepInEx (for reference DLLs) ===================== -->
+	<!--
+	    Which r2modman / Thunderstore Mod Manager profile to look in.
+	    Override with -p:R2ModManProfile=MyProfile
+	-->
+	<PropertyGroup>
+		<R2ModManProfile Condition="'$(R2ModManProfile)' == ''">Default</R2ModManProfile>
+	</PropertyGroup>
+
+	<!-- Probed by looking for core/BepInEx.dll underneath. -->
+	<PropertyGroup>
+		<!-- Manual BepInEx install, straight into the game folder -->
+		<BEPINEX_PATH Condition="!Exists('$(BEPINEX_PATH)/core/BepInEx.dll')">$(VALHEIM_INSTALL)/BepInEx</BEPINEX_PATH>
+		<!-- r2modman / Thunderstore Mod Manager profile (Linux) -->
+		<BEPINEX_PATH Condition="!Exists('$(BEPINEX_PATH)/core/BepInEx.dll')">$(HOME)/.config/r2modmanPlus-local/Valheim/profiles/$(R2ModManProfile)/BepInEx</BEPINEX_PATH>
+		<!-- r2modman / Thunderstore Mod Manager profile (Windows) -->
+		<BEPINEX_PATH Condition="!Exists('$(BEPINEX_PATH)/core/BepInEx.dll')">$(AppData)/r2modmanPlus-local/Valheim/profiles/$(R2ModManProfile)/BepInEx</BEPINEX_PATH>
+		<!-- r2modman / Thunderstore Mod Manager profile (macOS) -->
+		<BEPINEX_PATH Condition="!Exists('$(BEPINEX_PATH)/core/BepInEx.dll')">$(HOME)/Library/Application Support/r2modmanPlus-local/Valheim/profiles/$(R2ModManProfile)/BepInEx</BEPINEX_PATH>
+	</PropertyGroup>
+
+	<!-- ===================== Debug build deployment ===================== -->
+	<!-- Where a Debug build copies the built plugin to. -->
+	<PropertyGroup>
+		<MOD_DEPLOYPATH Condition="'$(MOD_DEPLOYPATH)' == ''">$(BEPINEX_PATH)/plugins</MOD_DEPLOYPATH>
+	</PropertyGroup>
+
+	<!-- Optional dedicated server deployment; off unless CopyToServer is true. -->
+	<PropertyGroup>
+		<VALHEIM_SERVER Condition="!Exists('$(VALHEIM_SERVER)')">$(HOME)/.steam/steam/steamapps/common/Valheim dedicated server</VALHEIM_SERVER>
+		<VALHEIM_SERVER Condition="!Exists('$(VALHEIM_SERVER)')">C:/Program Files (x86)/Steam/steamapps/common/Valheim dedicated server</VALHEIM_SERVER>
+		<SERVER_DEPLOYPATH Condition="'$(SERVER_DEPLOYPATH)' == ''">$(VALHEIM_SERVER)/BepInEx/plugins</SERVER_DEPLOYPATH>
+		<CopyToServer Condition="'$(CopyToServer)' == ''">false</CopyToServer>
+	</PropertyGroup>
+
+	<!-- ===================== Misc ===================== -->
+	<PropertyGroup>
+		<!-- Target that the packaging/deployment targets hang off of. -->
+		<AfterTargets Condition="'$(AfterTargets)' == ''">Build</AfterTargets>
+		<!--
+		    pdb2mdb.exe is a Windows-only Mono tool and is optional; the .mdb
+		    step is skipped entirely when it is not present.
+		-->
+		<Pdb2MdbPath Condition="!Exists('$(Pdb2MdbPath)')">$(ProjectDir)libraries/Debug/pdb2mdb.exe</Pdb2MdbPath>
+	</PropertyGroup>
+
 </Project>

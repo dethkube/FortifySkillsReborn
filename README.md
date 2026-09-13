@@ -3,6 +3,11 @@ FortifySkillsRedux is a remake of the FortifySkills mod for Valheim that changes
 
 **Server-Side Info**: This mod does work as a client-side only mod and only needs to be installed on the server if you wish to enforce configuration settings.
 
+## Supported Game Version
+Updated for **Valheim 1.0** (built and verified against 1.0.12, Deep North). Requires Jotunn 2.30.0 or newer.
+
+Skills added by the game since the previous release (Polearms, Crossbows, Dodge and Ride) get their own configuration sections automatically.
+
 ## Version 1.4.0 Notice
 Configuration settings have changed! Please delete your config file and let the mod regenerate if if you're having any issues.
 
@@ -68,6 +73,27 @@ There is a section with the same config settigns for each skill in the Vanilla g
 These settings are only used if Use Individual Settings is Enabled and they allow you to customize the XP gains for each individual skill.
 
 
+## Building from Source
+The project targets `net48` and builds with the .NET SDK on **Linux, macOS and Windows**:
+
+```sh
+dotnet build -c Release
+```
+
+A Release build also assembles the Nexus and Thunderstore packages under `Publish/`. A Debug build instead copies the plugin straight into your BepInEx `plugins` folder.
+
+Two things have to be found on disk: your **Valheim install** (for the game assemblies, which are publicized at build time) and a **BepInEx install** (for `BepInEx.dll` and `0Harmony.dll`). Both are auto-detected, including Steam's default Linux/macOS/Windows locations and r2modman / Thunderstore Mod Manager profiles. If detection picks the wrong place, override it without editing anything:
+
+```sh
+dotnet build -c Release \
+  -p:VALHEIM_INSTALL="$HOME/.steam/steam/steamapps/common/Valheim" \
+  -p:BEPINEX_PATH="$HOME/.config/r2modmanPlus-local/Valheim/profiles/Default/BepInEx"
+```
+
+Use `-p:R2ModManProfile=MyProfile` to point at a mod manager profile other than `Default`, and `-p:MOD_DEPLOYPATH=...` to change where Debug builds deploy. See `environment.props` for the full list.
+
+> Note: Jotunn ships its own assembly publicizer, but it is a .NET Framework MSBuild task that `dotnet build` cannot load, so it is bypassed in favour of the cross-platform `BepInEx.AssemblyPublicizer.MSBuild`. This is why no Windows-only prebuild step is needed.
+
 ## Compatibility
 **All skill mods by Smoothbrain**
   - The XP multiplier settings in this mod stacks multiplicatively with the XP multiplier in Smoothbrain's skill mods.
@@ -77,7 +103,11 @@ These settings are only used if Use Individual Settings is Enabled and they allo
 - May have issues with anything that changes the SkillsDialog text in-game.
 
 ## Notes
-- If you want to be extra cautious you can back up your character file from "%appdata%\..\LocalLow\IronGate\Valheim\characters" as this mod changes how those files are written.
+- If you want to be extra cautious you can back up your character files, as this mod changes how those files are written. They live in:
+    - Windows: `%appdata%\..\LocalLow\IronGate\Valheim\characters`
+    - Linux (native build): `~/.config/unity3d/IronGate/Valheim/characters`
+    - Linux (Proton): `~/.steam/steam/steamapps/compatdata/892970/pfx/drive_c/users/steamuser/AppData/LocalLow/IronGate/Valheim/characters`
+    - macOS: `~/Library/Application Support/unity.IronGate.Valheim/characters`
 - Your Fortify skill level will be set to 95% of your current skill level when you first install it so dying immediately will have the same effect as the base game.
 - If you remove this mod your character will be fine, the fortify skill level will disappear and the current skill level will stay the same (including levels gained due to the faster leveling from this mod).
 

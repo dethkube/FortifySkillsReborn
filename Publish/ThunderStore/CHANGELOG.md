@@ -5,6 +5,17 @@
 			<th align="center">Notes</th>
 		</tr>
 		<tr>
+			<td align="center">1.6.0</td>
+			<td align="left">
+				<ul>
+					<li>Updated for Valheim 1.0 (tested against 1.0.12, Deep North).</li>
+					<li>Updated Jotunn to 2.30.0 and BepInEx to 5.4.2350.</li>
+					<li>Config entries are now generated for the skills added since the last release (Polearms, Crossbows, Dodge, Ride).</li>
+					<li>The project now builds on Linux and macOS as well as Windows.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
 			<td align="center">1.5.3</td>
 			<td align="left">
 				<ul>
