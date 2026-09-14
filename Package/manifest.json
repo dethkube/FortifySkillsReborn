@@ -1,9 +1,9 @@
 {
   "name": "FortifySkillsReborn",
   "author": "dethkube",
-  "version_number": "1.6.0",
+  "version_number": "1.7.0",
   "website_url": "https://github.com/dethkube/FortifySkillsReborn",
-  "description": "Changes skill loss on death. Instead of losing 5% of each skill when you die, you are rewarded for staying alive longer: each skill gains a fortified level that it resets to on death. Fork of FortifySkillsRedux by Searica.",
+  "description": "Changes skill loss on death. Each skill gains a slowly-growing fortified level that acts as a floor your skills can never fall below, so a run of deaths can no longer erase your progress. Fork of FortifySkillsRedux by Searica.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2350",
     "ValheimModding-Jotunn-2.30.0"

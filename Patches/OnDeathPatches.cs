@@ -6,14 +6,17 @@ using Logging;
 namespace FortifySkillsReborn.Patches;
 
 /// <summary>
-///     Reset Fortify Skills when resetcharacter console command is used
+///     Applies the fortified skill levels when the player dies.
 /// </summary>
 [HarmonyPatch(typeof(Player))]
 internal static class OnDeathPatches
 {
     /// <summary>
-    ///     Prevents skill loss on death by modifying Vanilla settings. Allows this
-    ///     mod to override the skill loss of mods like HardCore presets.
+    ///     Clears the DeathSkillsReset global key so the game takes its normal
+    ///     percentage penalty instead of wiping every skill. Without this, a
+    ///     HardCore preset would empty m_skillData and there would be nothing
+    ///     left for the fortified levels to restore. The ordinary death penalty
+    ///     is left alone and handled in the finalizer below.
     /// </summary>
     /// <param name="__instance"></param>
     [HarmonyPrefix]
@@ -38,14 +41,34 @@ internal static class OnDeathPatches
             return;
         }
 
+        // This runs as a finalizer, so the game has already applied its own
+        // skill penalty by now: Player.OnDeath calls Skills.OnDeath, which
+        // lowers every skill by m_DeathLowerFactor * Game.m_skillReductionRate
+        // (5% by default), and only on a hard death.
+        bool resetToFortify = FortifySkillsReborn.Instance.SkillLossOnDeath.Value == SkillLossMode.ResetToFortify;
+
         Skills skills = __instance.m_skills;
         foreach (KeyValuePair<SkillType, Skill> pair in skills.m_skillData)
         {
-            if (FortifySkillData.s_FortifySkills.ContainsKey(pair.Key))
+            if (!FortifySkillData.s_FortifySkills.TryGetValue(pair.Key, out FortifySkillData fortify))
             {
-                FortifySkillData fortify = FortifySkillData.s_FortifySkills[pair.Key];
+                continue;
+            }
 
+            if (resetToFortify)
+            {
+                // Discard whatever the game worked out and drop straight to the
+                // fortified level, even when that costs more than the penalty.
                 Log.LogInfo($"Setting {fortify.SkillName} to fortify level: {fortify.FortifyLevel}", Log.InfoLevel.Medium);
+
+                pair.Value.m_level = fortify.FortifyLevel;
+                pair.Value.m_accumulator = 0f;
+            }
+            else if (pair.Value.m_level < fortify.FortifyLevel)
+            {
+                // Keep the game's penalty and use the fortified level purely as
+                // a floor. A soft death costs nothing, matching the base game.
+                Log.LogInfo($"Raising {fortify.SkillName} to fortify floor: {fortify.FortifyLevel}", Log.InfoLevel.Medium);
 
                 pair.Value.m_level = fortify.FortifyLevel;
                 pair.Value.m_accumulator = 0f;

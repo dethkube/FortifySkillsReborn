@@ -20,6 +20,24 @@ using ConfigFileWatcher = Configs.ConfigFileWatcher;
 // the GNU General Public License v3.0; see the LICENSE file.
 namespace FortifySkillsReborn;
 
+/// <summary>
+///     How a skill's active level is reduced when the player dies.
+/// </summary>
+internal enum SkillLossMode
+{
+    /// <summary>
+    ///     Take the normal game penalty (5% by default, scaled by world
+    ///     modifiers) but never drop below the fortified skill level.
+    /// </summary>
+    FortifyFloor,
+
+    /// <summary>
+    ///     Set the skill straight to its fortified level, which can cost more
+    ///     than the normal penalty. This is how FortifySkillsRedux behaved.
+    /// </summary>
+    ResetToFortify,
+}
+
 [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
 [BepInDependency(Jotunn.Main.ModGuid, Jotunn.Main.Version)]
 [NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Patch)]
@@ -29,7 +47,7 @@ internal sealed class FortifySkillsReborn : BaseUnityPlugin
     public const string PluginName = "FortifySkillsReborn";
     internal const string Author = "dethkube";
     public const string PluginGUID = $"{Author}.Valheim.{PluginName}";
-    public const string PluginVersion = "1.6.0";
+    public const string PluginVersion = "1.7.0";
 
     private const string MainSection = "Global";
     private const string Mechanics = "Mechanics";
@@ -47,6 +65,8 @@ internal sealed class FortifySkillsReborn : BaseUnityPlugin
     internal SkillConfig GlobalSkillConfig { get; private set; }
 
     internal ConfigEntry<bool> EnableIndividualSettings { get; private set; }
+
+    internal ConfigEntry<SkillLossMode> SkillLossOnDeath { get; private set; }
 
     internal ConfigEntry<bool> KeepAllItemsOnDeath { get; private set; }
     internal ConfigEntry<bool> KeepEquippedItemsOnDeath { get; private set; }
@@ -94,6 +114,20 @@ internal sealed class FortifySkillsReborn : BaseUnityPlugin
             synced: false
         );
         Log.Verbosity.SettingChanged += delegate { if (!ShouldSave) { ShouldSave = true; } };
+
+        SkillLossOnDeath = Config.BindConfigInOrder(
+            MainSection,
+            "Skill Loss Mode",
+            SkillLossMode.FortifyFloor,
+            "How your skills are reduced when you die. " +
+            "FortifyFloor: you lose the normal game penalty (5% by default, scaled by world modifiers) " +
+            "but never drop below your fortified skill level. " +
+            "ResetToFortify: your skills are set straight to their fortified skill level, which can cost " +
+            "more than the normal penalty (this is how FortifySkillsRedux behaved). If you use " +
+            "ResetToFortify, also set Active Skill XP Multiplier to 1.5 and Max Fortify Skill XP Rate " +
+            "to 0.8 to match how FortifySkillsRedux was tuned."
+        );
+        SkillLossOnDeath.SettingChanged += delegate { if (!ShouldSave) { ShouldSave = true; } };
 
         KeepAllItemsOnDeath = Config.BindConfigInOrder(
             MainSection,

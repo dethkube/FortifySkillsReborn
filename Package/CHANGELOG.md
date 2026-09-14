@@ -5,6 +5,21 @@
 			<th align="center">Notes</th>
 		</tr>
 		<tr>
+			<td align="center">1.7.0</td>
+			<td align="left">
+				<ul>
+					<li>Added a <b>Skill Loss Mode</b> setting, which changes how skills are reduced on death.
+						<ul>
+							<li><code>FortifyFloor</code> (new default): you take the normal game death penalty (5% by default, scaled by world modifiers) and the fortified level acts purely as a floor. A skill at 20 with a fortified level of 16 now drops to 19 rather than 16.</li>
+							<li><code>ResetToFortify</code>: the previous behaviour, where dying sets each skill straight to its fortified level. To match how FortifySkillsRedux was tuned, also set Active Skill XP Multiplier to 1.5 and Max Fortify Skill XP Rate to 0.8.</li>
+						</ul>
+					</li>
+					<li>Fixed soft deaths being penalised. The base game only lowers skills on a hard death, but the fortified levels were previously applied on every death, so dying again shortly after a death still cost you skill levels. In <code>FortifyFloor</code> mode a soft death now costs nothing, matching the base game.</li>
+					<li>Rewrote the README around the new setting, including a "Matching the old FortifySkillsRedux behaviour" section.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
 			<td align="center">1.6.0</td>
 			<td align="left">
 				<ul>

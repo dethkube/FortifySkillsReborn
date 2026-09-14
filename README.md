@@ -1,5 +1,7 @@
 # FortifySkillsReborn
-FortifySkillsReborn is a fork of [FortifySkillsRedux](https://github.com/searica/FortifySkillsRedux) by Searica (itself a remake of the original FortifySkills mod), updated for Valheim 1.0 and maintained by dethkube. It changes how skills are lost on death. Rather than being punished for dying by losing a flat 5% of every skill, you are instead rewarded for staying alive for longer. This is achieved by adding a new fortified skill level for each skill that is used when you die to reset your skills to their fortified skill level. This means that no matter how many times you die, your skills will never drop below their fortified skill levels.
+FortifySkillsReborn is a fork of [FortifySkillsRedux](https://github.com/searica/FortifySkillsRedux) by Searica (itself a remake of the original FortifySkills mod), updated for Valheim 1.0 and maintained by dethkube. It changes how skills are lost on death. Rather than every death costing you a flat 5% of every skill forever, you are rewarded for staying alive: each skill gains a second, slowly-growing **fortified level**, and that fortified level is a floor your skills can never fall below. The longer you survive, the higher the floor rises, so a bad run of deaths can no longer grind your progress away.
+
+By default you still take the game's normal death penalty — you simply cannot drop below your fortified level. If you prefer the harsher behaviour of the older FortifySkillsRedux, where dying drops each skill *straight to* its fortified level, set **Skill Loss Mode** to `ResetToFortify` (see [Configuration](#configuration)).
 
 **Server-Side Info**: This mod does work as a client-side only mod and only needs to be installed on the server if you wish to enforce configuration settings.
 
@@ -16,11 +18,16 @@ This mod was renamed from **FortifySkillsRedux** to **FortifySkillsReborn**, whi
 
 If you are coming from FortifySkillsRedux, **uninstall it first** — running both at once means both will patch the same methods and your XP rates will be applied twice. Your existing settings are not carried over automatically; copy them into the new file if you want to keep them.
 
-Note that the default XP values have changed in this fork (see Configuration below).
+Two things behave differently in this fork, so read [Mechanics](#mechanics) before assuming your old settings still apply:
+
+- Death now applies the **normal game penalty with the fortified level as a floor**, instead of resetting each skill straight to its fortified level.
+- The default XP values have changed (Active Skill XP Multiplier 1.5 to 1.0, Max Fortify Skill XP Rate 0.8 to 0.5).
+
+If you want the old behaviour back, see [Matching the old FortifySkillsRedux behaviour](#matching-the-old-fortifyskillsredux-behaviour) — it takes three settings, not one.
 
 ## Installation
 **Via Mod Manager (Recommended)**
-- The best way to install the mod is using r2modman and installing it from Thunderstore.
+- The best way to install the mod is using r2modman and installing it from Thunderstore: [FortifySkillsReborn on Thunderstore](https://thunderstore.io/c/valheim/p/HappyFunTimeGoGo/FortifySkillsReborn/).
 - The next best way is to use Thunderstore Mod Manager.
 
 **Manual**
@@ -29,14 +36,34 @@ Note that the default XP values have changed in this fork (see Configuration bel
 - Download this mod and move `FortifySkillsReborn.dll` into `<GameLocation>/BepInEx/plugins`
 
 ## Mechanics
-The Fortify skill level increases very slowly at first but if you get your active level significantly higher that your fortified level it will level a little quicker giving you an incentive not to die. Because of this your fortified level may fall a long way behind your active level if you stay alive for a long time and you can lose more than you would with the vanilla 5% penalty. By default your active skill XP is left at vanilla rates; if you want to offset that risk you can raise **Active Skill XP Multiplier** in the config.
+Every skill gets a second level tracked alongside it: the **fortified level**. It rises as you earn skill XP — very slowly at first, and faster while your active level sits well above it — so the longer you stay alive, the more of your progress becomes permanent. Your fortified level is shown in parentheses next to your active level in the skill list.
 
-There are two major gameplay advantages to this:
+What happens to that progress when you die is controlled by **Skill Loss Mode**.
 
+### FortifyFloor (default)
+You take the game's normal death penalty (5% by default, scaled by your world modifiers), and the fortified level acts purely as a floor.
+
+| Scenario | Active | Fortified | After dying |
+|---|---|---|---|
+| Normal death | 20 | 16 | **19** — lost 5%, still above the floor |
+| Repeated deaths | 17 | 16 | **16** — cannot fall below the floor |
+| Soft death (dying again shortly after a death) | 20 | 16 | **20** — no penalty, same as the base game |
+
+This is the gentler of the two modes: a death costs you the same as it would in the base game, and the fortified level only ever steps in to stop you falling too far.
+
+### ResetToFortify
+Dying sets each skill *straight to* its fortified level, discarding whatever the normal penalty would have been.
+
+| Scenario | Active | Fortified | After dying |
+|---|---|---|---|
+| Any hard death | 20 | 16 | **16** — the whole gap is lost |
+
+This is how FortifySkillsRedux behaved. Because your fortified level can fall a long way behind your active level during a long survival streak, a single death here can cost far more than the vanilla 5% — 20% in the example above. Redux offset that by handing out bonus active XP and letting the fortified level rise faster, so if you choose this mode you should restore those values too: see [Matching the old FortifySkillsRedux behaviour](#matching-the-old-fortifyskillsredux-behaviour).
+
+### In either mode
 - A string of deaths won't destroy your skill level. No need to worry about the No Skill Drain buff ending just before you die.
 - Less used skills won't wither away completely from the occasional death. If you use one weapon type a lot early game but then switch to something else, now a few deaths without training the original weapon skill won't completely reset it.
-
-Your Fortify skill level will be displayed in parenthesis in your skill list next to your active skill level.
+- Your skills can never drop below their fortified levels, however many times you die.
 
 ## Configuration
 Changes made to the configuration settings will be reflected in-game immediately (no restart required) and they will also sync to clients if the mod is on the server. The mod also has a built in file watcher so you can edit settings via an in-game configuration manager (changes applied upon closing the in-game configuration manager) or by changing values in the file via a text editor or mod manager.
@@ -47,13 +74,20 @@ Changes made to the configuration settings will be reflected in-game immediately
     - Acceptable values: Low, Medium, High
     - Default value: Low.
 
+**Skill Loss Mode [Synced with Server]**
+- How your skills are reduced when you die.
+    - `FortifyFloor`: you lose the normal game penalty (5% by default, scaled by your world modifiers) but never drop below your fortified skill level. A soft death (dying again soon after a death) costs nothing, same as the base game.
+    - `ResetToFortify`: your skills are set straight to their fortified skill level. This can cost considerably more than the normal penalty, and is how FortifySkillsRedux behaved.
+    - Acceptable values: FortifyFloor, ResetToFortify
+    - Default value: FortifyFloor.
+
 **Keep All Items on Death [Synced with Server]**
 - Whether to keep all items on death.
     - Acceptable values: False, True
     - Default value: false.
 
 **Keep Equipped Items on Death [Synced with Server]**
-- Whether to keep your equiped items when you die."
+- Whether to keep your equipped items when you die.
     - Acceptable values: False, True
     - Default value: false.
 
@@ -66,17 +100,39 @@ Changes made to the configuration settings will be reflected in-game immediately
 **Active Skill XP Multiplier [Synced with Server]**
 - Controls XP gained for the active skill level. 1 = base game XP, 1.5 = 50% bonus XP, 0.8 = 20% less XP.
     - Default value: 1.0
+    - Raise this to **1.5** if you use `ResetToFortify` — see [Matching the old FortifySkillsRedux behaviour](#matching-the-old-fortifyskillsredux-behaviour).
 
 **Max Fortify Skill XP Rate [Synced with Server]**
 - Controls maximum rate of XP earned for the fortified skill as a percentage of vanilla XP rates. Values below 1 mean that fortified skills will always increase slower than vanilla skills. Values above 1 mean that fortified skills can increase faster than vanilla skills if your active skill level is high enough.
+    - Higher values keep the fortified level closer behind your active level, which raises your floor faster and makes each death cost less.
     - Default value: 0.5
+    - Raise this to **0.8** if you use `ResetToFortify` — see [Matching the old FortifySkillsRedux behaviour](#matching-the-old-fortifyskillsredux-behaviour).
 
 **Fortify Skill XP Per Level [Synced with Server]**
 - Controls XP gained for the fortified skill. For every level the active skill is above the fortified skill increase the percentage of XP gained for the fortified skill by this amount up to Max Fortify Skill XP Rate.
     - Default value: 0.1
 
+### Matching the old FortifySkillsRedux behaviour
+This fork's defaults are tuned for `FortifyFloor`. Switching **Skill Loss Mode** to `ResetToFortify` on its own will feel *harsher than FortifySkillsRedux ever did*, because Redux paired that reset with bonus active XP and a faster-rising fortified level. To reproduce Redux's tuning, change all three:
+
+| Setting | FortifySkillsReborn default | For FortifySkillsRedux behaviour |
+|---|---|---|
+| Skill Loss Mode | `FortifyFloor` | `ResetToFortify` |
+| Active Skill XP Multiplier | 1.0 | **1.5** |
+| Max Fortify Skill XP Rate | 0.5 | **0.8** |
+| Fortify Skill XP Per Level | 0.1 | 0.1 (unchanged) |
+
+Why the other two matter:
+
+- **Active Skill XP Multiplier 1.5** gives you 50% bonus active XP. This is what made the steeper death penalty bearable — you regain the lost levels faster than the base game would allow.
+- **Max Fortify Skill XP Rate 0.8** lets the fortified level climb faster, keeping it closer behind your active level so the gap lost on death stays smaller.
+
+Leaving these at 1.0 and 0.5 while using `ResetToFortify` means you take Redux's full death penalty with none of its compensation.
+
+If **Use Individual Settings** is enabled, remember these XP values live in each per-skill section (and the Modded Skill Settings section), not in Mechanics.
+
 ### IndividualSkills Section
-There is a section with the same config settigns for each skill in the Vanilla game and one additional section for all skills added by mods. 
+There is a section with the same config settings for each skill in the Vanilla game and one additional section for all skills added by mods. 
 These settings are only used if Use Individual Settings is Enabled and they allow you to customize the XP gains for each individual skill.
 
 
@@ -115,8 +171,8 @@ Use `-p:R2ModManProfile=MyProfile` to point at a mod manager profile other than 
     - Linux (native build): `~/.config/unity3d/IronGate/Valheim/characters`
     - Linux (Proton): `~/.steam/steam/steamapps/compatdata/892970/pfx/drive_c/users/steamuser/AppData/LocalLow/IronGate/Valheim/characters`
     - macOS: `~/Library/Application Support/unity.IronGate.Valheim/characters`
-- Your Fortify skill level will be set to 95% of your current skill level when you first install it so dying immediately will have the same effect as the base game.
-- If you remove this mod your character will be fine, the fortify skill level will disappear and the current skill level will stay the same (including levels gained due to the faster leveling from this mod).
+- Your Fortify skill level will be set to 95% of your current skill level when you first install it, so dying immediately has the same effect as the base game in either mode.
+- If you remove this mod your character will be fine, the fortify skill level will disappear and the current skill level will stay the same (including any levels gained from raising **Active Skill XP Multiplier** above 1.0).
 
 ## Source Code
 Source code is available on Github.
@@ -136,4 +192,4 @@ This mod is based on the original one made by Merlyn42 and the patched version w
 - **FortifySkillsRedux**, which this mod is forked from: [Searica](https://github.com/searica/FortifySkillsRedux).
 - This fork (**FortifySkillsReborn**): dethkube, https://github.com/dethkube/FortifySkillsReborn
 
-Licensed under the **GNU General Public License v3.0** — see [LICENSE](LICENSE). This is a modified version of FortifySkillsRedux; changes made in 2026 include updating the mod for Valheim 1.0, cross-platform build support, and new default XP values.
+Licensed under the **GNU General Public License v3.0** — see [LICENSE](LICENSE). This is a modified version of FortifySkillsRedux; changes made in 2026 include updating the mod for Valheim 1.0, cross-platform build support, the addition of the Skill Loss Mode setting, and new default XP values.
