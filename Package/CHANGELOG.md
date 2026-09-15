@@ -5,6 +5,15 @@
 			<th align="center">Notes</th>
 		</tr>
 		<tr>
+			<td align="center">1.7.1</td>
+			<td align="left">
+				<ul>
+					<li>New mod icon, so the package is no longer easy to confuse with FortifySkillsRedux (sorry Searica).</li>
+					<li>Internal cleanup: removed this mod's bundled config file watcher in favour of the equivalent one Jotunn now provides. No change in behaviour.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
 			<td align="center">1.7.0</td>
 			<td align="left">
 				<ul>
